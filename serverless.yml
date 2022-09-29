@@ -12,7 +12,12 @@ functions:
     handler: index.handler
     events:
       - http: ANY /
-      - http: 'ANY {proxy+}'
+      - http: 'ANY /{proxy+}'
 
 plugins:
   - serverless-offline
+  - serverless-dotenv-plugin
+
+custom:
+  serverless-offline:
+    noPrependStageInUrl: true

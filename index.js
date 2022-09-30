@@ -13,9 +13,6 @@ router.get("/about", (ctx) => {
   ctx.body = "소개";
 });
 
-app.use((ctx) => {
-  ctx.body = "hello world";
-});
 app.use(router.routes()).use(router.allowedMethods());
 
 app.listen(4000, () => {

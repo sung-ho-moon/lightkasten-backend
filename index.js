@@ -1,14 +1,13 @@
 const serverless = require("serverless-http");
-const express = require("express");
-const app = express();
+const koa = require("koa");
+const app = new koa();
 
-//http://localhost:3000/dev//
-app.get("/", function (req, res) {
-  res.send("Hello World!");
+app.use((ctx) => {
+  ctx.body = "hello world";
 });
 
-//http://localhost:3000/dev/dev
-app.get("/dev", function (req, res) {
-  res.send("Hello World!");
+app.listen(4000, () => {
+  console.log("Listening to port 4000");
 });
+
 module.exports.handler = serverless(app);

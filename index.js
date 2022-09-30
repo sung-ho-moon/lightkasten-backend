@@ -5,6 +5,9 @@ const Router = require("koa-router");
 const app = new koa();
 const router = new Router();
 
+const api = require("./src/api");
+router.use("/api", api.routes());
+
 router.get("/", (ctx) => {
   ctx.body = "home";
 });

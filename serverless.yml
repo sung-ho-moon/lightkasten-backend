@@ -1,5 +1,5 @@
 service: lightkasten-backend
-
+useDotenv: true
 frameworkVersion: '3'
 
 provider:
@@ -18,6 +18,3 @@ plugins:
   - serverless-offline
   - serverless-dotenv-plugin
 
-custom:
-  serverless-offline:
-    noPrependStageInUrl: true

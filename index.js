@@ -1,11 +1,15 @@
-require("dotenv").config();
-//serverless framework
-const serverless = require("serverless-http");
+//env
+import dotenv from "dotenv";
+dotenv.config();
 
-const koa = require("koa");
-const Router = require("koa-router");
-const bodyParser = require("koa-bodyparser");
-const mongoose = require("mongoose");
+//serverless framework
+import serverless from "serverless-http";
+
+import koa from "koa";
+import cors from "@koa/cors";
+import Router from "koa-router";
+import bodyParser from "koa-bodyparser";
+import mongoose from "mongoose";
 
 const { PORT, MONGO_URI } = process.env;
 
@@ -21,18 +25,18 @@ mongoose
 const app = new koa();
 const router = new Router();
 
-const api = require("./src/api/index");
+import api from "./src/api/index.js";
 router.use("/api", api.routes());
 
+app.use(cors());
 app.use(bodyParser());
-
 app.use(router.routes()).use(router.allowedMethods());
 
 const port = PORT || 4000;
+
 app.listen(PORT, () => {
-  //sls offline이라서 쉽지않네
-  console.log(`Listening to port ${port}`);
+  console.log("Listening to port %d", port);
 });
 
 //serverless hadnler exports
-module.exports.handler = serverless(app);
+export const handler = serverless(app);

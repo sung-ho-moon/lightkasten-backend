@@ -4,6 +4,8 @@
     "serverless-offline": "^11.0.0"
   },
   "dependencies": {
+    "@koa/cors": "^3.4.1",
+    "dotenv": "^16.0.3",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^12.0.0",

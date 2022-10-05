@@ -6,15 +6,16 @@ provider:
   name: aws
   runtime: nodejs14.x
   region: ap-northeast-2
+  environment:
+    MONGO_URI: ${env:MONGO_URI}
+
 
 functions:
   app:
     handler: index.handler
     events:
       - http: ANY /
-      - http: 'ANY /{proxy+}'
+      - http: 'ANY /{proxy+}' 
 
 plugins:
   - serverless-offline
-  - serverless-dotenv-plugin
-

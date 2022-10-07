@@ -13,10 +13,13 @@ import mongoose from "mongoose";
 
 const { PORT, MONGO_URI } = process.env;
 
+import createFakeData from "./src/createFakeData.js";
+
 mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log("connected to db");
+    //createFakeData();
   })
   .catch((e) => {
     console.error(e);

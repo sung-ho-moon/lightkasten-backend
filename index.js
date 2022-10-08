@@ -29,10 +29,12 @@ const app = new koa();
 const router = new Router();
 
 import api from "./src/api/index.js";
+import jwtMiddleware from "./src/lib/jwtMiddleware.js";
 router.use("/api", api.routes());
 
 app.use(cors());
 app.use(bodyParser());
+app.use(jwtMiddleware);
 app.use(router.routes()).use(router.allowedMethods());
 
 const port = PORT || 4000;

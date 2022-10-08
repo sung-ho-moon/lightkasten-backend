@@ -27,11 +27,11 @@ export const register = async (ctx) => {
 
     ctx.body = user.serialize(); //해시 비밀번호 필드 제거
 
-    // const token = user.generateToken();
-    // ctx.cookies.set("access_token", token, {
-    //   maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
-    //   httpOnly: true,
-    // });
+    const token = user.generateToken();
+    ctx.cookies.set("access_token", token, {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+      httpOnly: true,
+    });
   } catch (e) {
     ctx.throw(500, e);
   }
@@ -60,6 +60,11 @@ export const login = async (ctx) => {
       return;
     }
     ctx.body = user.serialize();
+    const token = user.generateToken();
+    ctx.cookies.set("access_token", token, {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+      httpOnly: true,
+    });
   } catch (e) {
     ctx.throw(500, e);
   }
@@ -67,8 +72,16 @@ export const login = async (ctx) => {
 
 export const check = async (ctx) => {
   //로그인 체크
+  const { user } = ctx.state;
+  if (!user) {
+    ctx.status = 401;
+    return;
+  }
+  ctx.body = user;
 };
 
 export const logout = async (ctx) => {
   //로그아웃
+  ctx.cookies.set("access_token");
+  ctx.status = 204;
 };

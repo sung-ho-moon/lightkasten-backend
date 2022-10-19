@@ -11,6 +11,10 @@ import Router from "koa-router";
 import bodyParser from "koa-bodyparser";
 import mongoose from "mongoose";
 
+//serve
+import serve from "koa-static";
+import send from "koa-send";
+
 const { PORT, MONGO_URI } = process.env;
 
 import createFakeData from "./src/createFakeData.js";
@@ -36,6 +40,9 @@ app.use(cors());
 app.use(bodyParser());
 app.use(jwtMiddleware);
 app.use(router.routes()).use(router.allowedMethods());
+
+//serve
+app.use(serve(__dirname + "./build"));
 
 const port = PORT || 4000;
 

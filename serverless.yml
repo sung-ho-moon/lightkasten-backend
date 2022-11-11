@@ -9,13 +9,41 @@ provider:
   environment:
     MONGO_URI: ${env:MONGO_URI}
     JWT_SECRET: ${env:JWT_SECRET}
+    ACCESS_KEY_ID : ${env:ACCESS_KEY_ID}
+    SECRET_KEY : ${env:SECRET_KEY}
+    REGION : ${env:REGION}
 
 functions:
   app:
     handler: index.handler
     events:
-      - http: ANY /
-      - http: "ANY /{proxy+}"
-
+      - http:
+          path: /
+          method: ANY
+          cors:
+            origin: 'https://lightkasten.link'
+            headers:
+              - Cookie
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: true
+      - http:
+          path: /{proxy+} # this matches any path, the token 'any' doesn't mean anything special
+          method: ANY
+          cors:
+            origin: 'https://lightkasten.link'
+            headers:
+              - Cookie
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: true
 plugins:
   - serverless-offline

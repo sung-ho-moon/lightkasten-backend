@@ -13,6 +13,10 @@ provider:
     SECRET_KEY : ${env:SECRET_KEY}
     REGION : ${env:REGION}
 
+plugins:
+  - serverless-offline
+  - serverless-apigw-binary
+
 functions:
   app:
     handler: index.handler
@@ -45,5 +49,9 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
             allowCredentials: true
-plugins:
-  - serverless-offline
+
+custom:
+  apigwBinary:
+    types: #list of mime-types
+      - 'multipart/form-data'
+      - 'application/x-www-form-urlencoded'

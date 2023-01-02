@@ -6,7 +6,7 @@ import upload from "../../lib/s3.js";
 const posts = new Router();
 
 posts.get("/", postsCtrl.list);
-posts.post("/", checkLoggedIn, postsCtrl.write);
+posts.post("/", checkLoggedIn, upload.single("image"), postsCtrl.write);
 posts.get("/:id", postsCtrl.getPostById, postsCtrl.read);
 posts.delete(
   "/:id",
@@ -20,11 +20,13 @@ posts.patch(
   checkLoggedIn,
   postsCtrl.getPostById,
   postsCtrl.checkOwnPost,
+  upload.single("image"),
   postsCtrl.update
 );
 
 //테스트 업로드
 posts.post("/image", upload.single("image"), (ctx, next) => {
+  /*
   const {
     fieldname,
     originalname,
@@ -50,6 +52,7 @@ posts.post("/image", upload.single("image"), (ctx, next) => {
   console.log("파일의 바이트(byte 사이즈)", size);
 
   ctx.body = { ok: true, data: "Single Upload Ok" };
+  */
 });
 
 export default posts;

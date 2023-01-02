@@ -1,7 +1,32 @@
 import Post from "../../models/post.js";
 import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
+import sanitizeHtml from "sanitize-html";
 //ObjectTypeCheckMiddleWare
+
+const sanitizeOption = {
+  allowedTags: [
+    "h1",
+    "h2",
+    "b",
+    "i",
+    "u",
+    "s",
+    "p",
+    "ul",
+    "ol",
+    "li",
+    "blockquote",
+    "a",
+    "img",
+  ],
+  allowedAttributes: {
+    a: ["href", "name", "target"],
+    img: ["src"],
+    li: ["class"],
+  },
+  allowedSchemes: ["data", "http"],
+};
 
 export const getPostById = async (ctx, next) => {
   const { id } = ctx.params;
@@ -39,12 +64,18 @@ POST /api/posts
 { title, body }
 */
 export const write = async (ctx) => {
-  const { title, body, tags } = ctx.request.body;
+  const { title, body, tags } = ctx.req.body;
+  console.log(title, body, tags);
+  let imgLink;
+  if (ctx.req.file !== undefined) {
+    imgLink = ctx.req.file.location;
+  }
   const post = new Post({
     title,
-    body,
+    body: sanitizeHtml(body, sanitizeOption),
     tags,
     user: ctx.state.user,
+    imgLink: imgLink,
   });
   try {
     await post.save();
@@ -52,6 +83,13 @@ export const write = async (ctx) => {
   } catch (e) {
     ctx.throw(500, e);
   }
+};
+
+const removeHtmlAndShorten = (body) => {
+  const filtered = sanitizeHtml(body, {
+    allowedTags: [],
+  });
+  return filtered.length < 200 ? filtered : `${filtered.slice(0, 200)}...`;
 };
 
 /* 포스트 목록 조회
@@ -83,8 +121,7 @@ export const list = async (ctx) => {
     ctx.set("Last-Page", Math.ceil(postCount / 10));
     ctx.body = posts.map((post) => ({
       ...post,
-      body:
-        post.body.length < 200 ? post.body : `${post.body.slice(0, 200)}...`,
+      body: removeHtmlAndShorten(post.body),
     }));
   } catch (e) {
     ctx.throw(500, e);
@@ -129,16 +166,41 @@ PATCH /api/posts/:id
 export const update = async (ctx) => {
   //수정필요
   const { id } = ctx.params;
-  try {
-    const post = await Post.findByIdAndUpdate(id, ctx.request.body, {
-      new: true,
-    }).exec();
+  const { title, body, tags } = ctx.req.body;
+  //file
+  let imgLink;
+  if (ctx.req.file !== undefined) {
+    imgLink = ctx.req.file.location;
+  }
 
+  const nextData = { ...ctx.req.body };
+  if (nextData.body) {
+    nextData.body = sanitizeHtml(nextData.body, sanitizeOption);
+  }
+
+  const patchPost = new Post({
+    _id: id,
+    title: nextData.title,
+    body: nextData.body,
+    tags: nextData.tags,
+    user: ctx.state.user,
+    imgLink: imgLink,
+  });
+  console.log(patchPost);
+  try {
+    const post = await Post.findOneAndUpdate(
+      { _id: id },
+      { $set: patchPost },
+      {
+        new: true, // 이 값을 설정하면 업데이트된 데이터를 반환합니다.
+        // false 일 때에는 업데이트 되기 전의 데이터를 반환합니다.
+      }
+    ).exec();
     if (!post) {
       ctx.status = 404;
       return;
     }
-    ctx.body = post;
+    ctx.body = patchPost;
   } catch (e) {
     ctx.throw(500, e);
   }

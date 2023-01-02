@@ -1,3 +1,9 @@
+process.env.NODE_ENV =
+  process.env.NODE_ENV &&
+  process.env.NODE_ENV.trim().toLowerCase() == "production"
+    ? "production"
+    : "development";
+
 //env
 import dotenv from "dotenv";
 dotenv.config();
@@ -18,7 +24,7 @@ const { PORT, MONGO_URI } = process.env;
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    console.log("connected to db");
+    //console.log("connected to db");
     //createFakeData();
   })
   .catch((e) => {
@@ -43,11 +49,13 @@ app.use(bodyParser());
 app.use(jwtMiddleware);
 app.use(router.routes()).use(router.allowedMethods());
 
-const port = PORT || 4000;
+//const port = PORT || 4000;
 
-app.listen(PORT, () => {
-  console.log("Listening to port %d", port);
-});
+//app.listen(PORT, () => {
+//  console.log("Listening to port %d", port);
+//});
 
 //serverless hadnler exports
-export const handler = serverless(app);
+export const handler = serverless(app, {
+  binary: ["image/png", "image/jpeg", "image/jpg"],
+});

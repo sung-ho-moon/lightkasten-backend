@@ -14,6 +14,7 @@ const PostSchema = new Schema({
     _id: mongoose.Types.ObjectId,
     username: String,
   },
+  imgLink: String,
 });
 
 const Post = mongoose.model("Post", PostSchema);

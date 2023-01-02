@@ -28,13 +28,25 @@ export const register = async (ctx) => {
     ctx.body = user.serialize(); //해시 비밀번호 필드 제거
 
     const token = user.generateToken();
-    ctx.cookies.set("access_token", token, {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
-      httpOnly: true,
-      //CHROME 80 Cookie Issue
-      sameSite: "none",
-      secure: true,
-    });
+    if (process.env.NODE_ENV == "production") {
+      //프로덕션 https
+      ctx.cookies.set("access_token", token, {
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+        httpOnly: true,
+        //CHROME 80 Cookie Issue
+        sameSite: "none",
+        secure: true,
+      });
+    } else if (process.env.NODE_ENV == "development") {
+      //개발환경 http
+      ctx.cookies.set("access_token", token, {
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+        httpOnly: false,
+        //CHROME 80 Cookie Issue
+        sameSite: "none",
+        secure: true,
+      });
+    }
   } catch (e) {
     ctx.throw(500, e);
   }
@@ -64,13 +76,25 @@ export const login = async (ctx) => {
     }
     ctx.body = user.serialize();
     const token = user.generateToken();
-    ctx.cookies.set("access_token", token, {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
-      httpOnly: true,
-      //CHROME 80 Cookie Issue
-      sameSite: "none",
-      secure: true,
-    });
+
+    if (process.env.NODE_ENV == "production") {
+      //프로덕션 https
+      ctx.cookies.set("access_token", token, {
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+        httpOnly: true,
+        //CHROME 80 Cookie Issue
+        sameSite: "none",
+        secure: true,
+      });
+    } else if (process.env.NODE_ENV == "development") {
+      //개발환경 http
+      ctx.cookies.set("access_token", token, {
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+        //CHROME 80 Cookie Issue
+        sameSite: "none",
+        secure: true,
+      });
+    }
   } catch (e) {
     ctx.throw(500, e);
   }
